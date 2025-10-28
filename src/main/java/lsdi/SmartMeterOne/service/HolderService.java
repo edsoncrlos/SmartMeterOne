@@ -27,6 +27,7 @@ public class HolderService {
 
     public HolderService(RestClient restClient) {
         this.restClient = restClient;
+        System.out.println("loggggggggiiingngnggngignigni");
     }
 
     public void handleEvent(String topic, EventPayloadDTO payload) throws Exception {
