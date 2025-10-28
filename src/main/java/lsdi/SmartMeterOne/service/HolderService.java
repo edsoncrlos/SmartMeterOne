@@ -29,19 +29,25 @@ public class HolderService {
         this.restClient = restClient;
     }
 
-    public void handleEvent(String topic, JsonNode payload) throws Exception {
-        switch (topic) {
-            case "connections" -> handleConnections(payload);
+    public void handleEvent(String topic, String payload) {
+        try {
+            JsonNode payloadJson = mapper.readTree(payload);
+            switch (topic) {
+                case "connections" -> handleConnections(payloadJson);
 //            case "present_proof_v2_0" -> handleProofPresentation(payload);
-            default -> System.out.println("Unknown topic: " + topic);
+                default -> System.out.println("Unknown topic: " + topic);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     public void handleConnections(JsonNode payload) {
+        System.out.println("Try send request");
         if (payload.get("state").asText().equals("active")) {
-            long start = System.currentTimeMillis();
+//            long start = System.currentTimeMillis();
             sendProofRequest(payload.get("connection_id").asText());
-            System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
+//            System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
         }
     }
 

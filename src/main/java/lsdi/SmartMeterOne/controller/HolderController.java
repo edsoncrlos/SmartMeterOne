@@ -24,7 +24,7 @@ public class HolderController {
     public void handleEvents(@PathVariable String topic, @RequestBody String payload) {
         System.out.println("topic: " +topic);
         System.out.println("payload: "+payload);
-//        holderService.handleEvent(topic, payload);
+        holderService.handleEvent(topic, payload);
     }
 
     /*@PostMapping("/webhook/topic/{topic}/")
