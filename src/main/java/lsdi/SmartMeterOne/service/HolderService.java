@@ -43,7 +43,6 @@ public class HolderService {
     }
 
     public void handleConnections(JsonNode payload) {
-        System.out.println("Try send request");
         if (payload.get("state").asText().equals("active")) {
 //            long start = System.currentTimeMillis();
             sendProofRequest(payload.get("connection_id").asText());
@@ -60,7 +59,7 @@ public class HolderService {
     }
 
     */
-    public JsonNode generateProofRequestPayload(String connectionId) {
+    public String generateProofRequestPayload(String connectionId) {
         String PROOF_REQUEST_TEMPLATE = """
         {
             "connection_id": "{{connection_id}}",
@@ -87,32 +86,24 @@ public class HolderService {
         }
         """;
 
-        String jsonString = PROOF_REQUEST_TEMPLATE
+        return PROOF_REQUEST_TEMPLATE
                 .replace("{{connection_id}}", connectionId)
-                .replace("{{ISSUER_DID}}", ISSUER_DID);
-
-        try {
-            return mapper.readTree(jsonString);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                .replace("{{issuer_did}}", ISSUER_DID);
     }
 
     public void sendProofRequest(String connectionId) {
         String url = ARIES_AGENT_ENDPOINT + "/present-proof-2.0/send-request";
-        JsonNode request = generateProofRequestPayload(connectionId);
-
-        long start = System.currentTimeMillis();
+        String requestPayload = generateProofRequestPayload(connectionId);
+        System.out.println("payload created");
 
         String response = restClient.post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
+                .body(requestPayload)
                 .retrieve()
                 .body(String.class);
 
         System.out.println("Response: " + response);
-        System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
     }
 
     /*/ --- Extrai campos e verifica prova
