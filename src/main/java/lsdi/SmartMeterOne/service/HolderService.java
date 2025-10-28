@@ -95,6 +95,8 @@ public class HolderService {
         String url = ARIES_AGENT_ENDPOINT + "/present-proof-2.0/send-request";
         String requestPayload = generateProofRequestPayload(connectionId);
         System.out.println("payload created");
+        System.out.println(requestPayload);
+        System.out.println(url);
 
         String response = restClient.post()
                 .uri(url)
