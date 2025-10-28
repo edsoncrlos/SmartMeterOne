@@ -20,14 +20,21 @@ public class HolderController {
         this.holderService = holderService;
     }
 
-    @PostMapping("/webhook/topic/{topic}")
-    public ResponseEntity<Void> handleWebhook(@PathVariable String topic, @RequestBody JsonNode payload) throws Exception {
+    @PostMapping("/webhook/topic/{topic}/")
+    public void handleEvents(@PathVariable String topic, @RequestBody String payload) {
+        System.out.println("topic: " +topic);
+        System.out.println("payload: "+payload);
+//        holderService.handleEvent(topic, payload);
+    }
+
+    /*@PostMapping("/webhook/topic/{topic}/")
+    public ResponseEntity<Void> handleEvents(@PathVariable String topic, @RequestBody JsonNode payload) throws Exception {
         System.out.println("controller");
         System.out.println("topic: " +topic);
         System.out.println("payload: "+payload);
         holderService.handleEvent(topic, payload);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 
     // --- Endpoints de teste JWT ---
 //    @PostMapping("/test-jwt")
