@@ -105,6 +105,7 @@ public class HolderService {
                 .retrieve()
                 .body(String.class);
 
+        System.out.println("Response: " + response);
         System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
     }
 
