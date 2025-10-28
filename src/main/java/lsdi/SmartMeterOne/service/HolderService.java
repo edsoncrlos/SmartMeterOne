@@ -27,10 +27,9 @@ public class HolderService {
 
     public HolderService(RestClient restClient) {
         this.restClient = restClient;
-        System.out.println("loggggggggiiingngnggngignigni");
     }
 
-    public void handleEvent(String topic, EventPayloadDTO payload) throws Exception {
+    public void handleEvent(String topic, JsonNode payload) throws Exception {
         switch (topic) {
             case "connections" -> handleConnections(payload);
 //            case "present_proof_v2_0" -> handleProofPresentation(payload);
@@ -38,10 +37,10 @@ public class HolderService {
         }
     }
 
-    public void handleConnections(EventPayloadDTO payload) {
-        if (payload.state().equals("active")) {
+    public void handleConnections(JsonNode payload) {
+        if (payload.get("state").asText().equals("active")) {
             long start = System.currentTimeMillis();
-            sendProofRequest(payload.connectionId());
+            sendProofRequest(payload.get("connection_id").asText());
             System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
         }
     }

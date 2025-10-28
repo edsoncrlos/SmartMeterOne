@@ -1,11 +1,14 @@
 package lsdi.SmartMeterOne.controller;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lsdi.SmartMeterOne.dtos.EventPayloadDTO;
 import lsdi.SmartMeterOne.service.HolderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 @RestController
@@ -18,10 +21,10 @@ public class HolderController {
     }
 
     @PostMapping("/webhook/topic/{topic}")
-    public ResponseEntity<Void> handleWebhook(@PathVariable String topic, @RequestBody EventPayloadDTO payload) throws Exception {
+    public ResponseEntity<Void> handleWebhook(@PathVariable String topic, @RequestBody JsonNode payload) throws Exception {
         System.out.println("controller");
         System.out.println("topic: " +topic);
-        System.out.println("payload: " +payload);
+        System.out.println("payload: "+payload);
         holderService.handleEvent(topic, payload);
         return ResponseEntity.noContent().build();
     }
