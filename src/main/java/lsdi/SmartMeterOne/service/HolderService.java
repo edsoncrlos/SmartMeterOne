@@ -1,20 +1,15 @@
 package lsdi.SmartMeterOne.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.RequiredArgsConstructor;
-import lsdi.SmartMeterOne.dtos.EventPayloadDTO;
-import lsdi.SmartMeterOne.dtos.ProofRequestDTO;
+import lsdi.SmartMeterOne.dtos.ProofRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
-
-import java.time.Instant;
-import java.util.*;
 
 @Service
 public class HolderService {
@@ -62,93 +57,23 @@ public class HolderService {
     }
 
     */
-    public ObjectNode generateProofRequestPayload(String connectionId) {
-        /*String PROOF_REQUEST_TEMPLATE = """
-        {
-            "connection_id": "{{connection_id}}",
-            "presentation_request": {
-                "indy": {
-                    "name": "Application Proof Request",
-                    "version": "1.0",
-                    "requested_attributes": {
-                        "attr": {
-                            "names": [
-                                "permission_list",
-                                "full_name"
-                            ],
-                            "restrictions": [
-                                {
-                                    "issuer_did": "{{issuer_did}}"
-                                }
-                            ]
-                        }
-                    },
-                    "requested_predicates": {}
-                }
-            }
-        }
-        """;
-
-        return PROOF_REQUEST_TEMPLATE
-                .replace("{{connection_id}}", connectionId)
-                .replace("{{issuer_did}}", ISSUER_DID);*/
-        String issuerDid = ISSUER_DID;
-
-
-        // Criação do JSON principal
-        ObjectNode root = mapper.createObjectNode();
-        root.put("connection_id", connectionId);
-
-        // presentation_request
-        ObjectNode presentationRequest = mapper.createObjectNode();
-        ObjectNode indy = mapper.createObjectNode();
-
-        indy.put("name", "Application Proof Request");
-        indy.put("version", "1.0");
-
-        // requested_attributes
-        ObjectNode requestedAttributes = mapper.createObjectNode();
-        ObjectNode attr = mapper.createObjectNode();
-
-        // names array
-        ArrayNode names = mapper.createArrayNode();
-        names.add("permission_list");
-        names.add("full_name");
-        attr.set("names", names);
-
-        // restrictions array
-        ArrayNode restrictions = mapper.createArrayNode();
-        ObjectNode restriction = mapper.createObjectNode();
-        restriction.put("issuer_did", issuerDid);
-        restrictions.add(restriction);
-        attr.set("restrictions", restrictions);
-
-        requestedAttributes.set("attr", attr);
-        indy.set("requested_attributes", requestedAttributes);
-
-        // requested_predicates vazio
-        indy.set("requested_predicates", mapper.createObjectNode());
-
-        presentationRequest.set("indy", indy);
-        root.set("presentation_request", presentationRequest);
-        String jsonString = "";
-
-        // Converte para JSON string formatada
-            return root;
-//            System.out.println(jsonString);
-    }
 
     public void sendProofRequest(String connectionId) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
-        ObjectNode requestPayload = generateProofRequestPayload(connectionId);
+        ProofRequest proofRequest = new ProofRequest(connectionId, ISSUER_DID);
+        try {
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
+            System.out.println(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("payload created");
-        System.out.println(requestPayload.asText());
         System.out.println(url);
 
         String response = restClient.post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(requestPayload)
+                .body(proofRequest)
                 .retrieve()
                 .body(String.class);
 

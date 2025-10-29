@@ -1,14 +1,8 @@
 package lsdi.SmartMeterOne.controller;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import lombok.RequiredArgsConstructor;
-import lsdi.SmartMeterOne.dtos.EventPayloadDTO;
 import lsdi.SmartMeterOne.service.HolderService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @RestController
