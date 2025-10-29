@@ -145,7 +145,7 @@ public class HolderService {
     }
 
     public void sendProofRequest(String connectionId) {
-        String url = ARIES_AGENT_ENDPOINT + "/present-proof-2.0/send-request";
+        String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
         String requestPayload = generateProofRequestPayload(connectionId);
         System.out.println("payload created");
         System.out.println(requestPayload);
