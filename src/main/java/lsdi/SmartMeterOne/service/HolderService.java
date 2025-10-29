@@ -6,16 +6,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lsdi.SmartMeterOne.dtos.ProofRequest;
+import org.hyperledger.acy_py.generated.model.PresentationRequest;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.ProofRequestPresentationBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.hyperledger.acy_py.generated.model.V20PresRequestByFormat;
+
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
+
+
+
+import org.hyperledger.acy_py.generated.model.PresentationRequest;
+import org.hyperledger.acy_py.generated.model.V20PresRequestByFormat;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class HolderService {
@@ -45,11 +63,60 @@ public class HolderService {
             System.out.println(e);
         }
     }
+    public void ariesClientTest(String connectionId) {
+        AriesClient ariesClient = AriesClient.builder()
+                .url("http://verifieragent:8041")
+                .build();
+
+        try {
+            // Construtor de prova
+            ProofRequestPresentationBuilder builder = new ProofRequestPresentationBuilder(ariesClient);
+
+            // Constrói o Proof Request para múltiplos atributos
+            PresentProofRequest presentProofRequest = PresentProofRequestHelper.buildForEachAttribute(
+                    connectionId,
+                    (Set<String>) List.of("permission_list", "full_name"),
+                    PresentProofRequest.ProofRequest.ProofRestrictions
+                            .builder()
+                            .issuerDid(ISSUER_DID) // restrição: issuer_did
+                            .build()
+            );
+
+            // Personaliza nome e versão da prova (equivalente ao JSON)
+            presentProofRequest.getProofRequest().setName("Application Proof Request");
+            presentProofRequest.getProofRequest().setVersion("1.0");
+
+            // Gera o Base64 (ou JSON) do request
+            Optional<ProofRequestPresentationBuilder.BuiltPresentationRequest> base64 = builder.buildRequest(presentProofRequest);
+
+            if (base64.isPresent()) {
+                System.out.println("✅ Proof request gerado (Base64):");
+                System.out.println(base64.get());
+            } else {
+                System.out.println("⚠️ Falha ao gerar proof request.");
+            }
+
+            // Envia o proof request para o agente ACA-Py
+            Optional<PresentationExchangeRecord> response = ariesClient.presentProofSendRequest(presentProofRequest);
+
+            if (response.isPresent()) {
+                System.out.println("✅ Proof request enviado com sucesso:");
+                System.out.println(response.get());
+            } else {
+                System.out.println("⚠️ Nenhuma resposta do agente ao enviar a prova.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ Erro ao enviar proof request: " + e.getMessage());
+        }
+
+    }
 
     public void handleConnections(JsonNode payload) {
         if (payload.get("state").asText().equals("active")) {
 //            long start = System.currentTimeMillis();
-            sendProofRequest(payload.get("connection_id").asText());
+            ariesClientTest(payload.get("connection_id").asText());
+//            sendProofRequest(payload.get("connection_id").asText());
 //            System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
         }
     }
