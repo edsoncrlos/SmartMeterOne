@@ -31,7 +31,7 @@ public class AuthenticationService {
     private final String serverIdentifier;
     private final String secureDataCollectorUrl;
 
-    private final TaskScheduler scheduler;
+//    private final TaskScheduler scheduler;
     private final AtomicReference<ScheduledFuture<?>> futureRef = new AtomicReference<>();
 
     //    @Getter
@@ -40,13 +40,13 @@ public class AuthenticationService {
     public AuthenticationService (
             RestClient restClient,
             ObjectMapper mapper,
-            TaskScheduler scheduler,
+//            TaskScheduler scheduler,
             @Value("${server.identifier:http://localhost:8090}") String serverIdentifier,
             @Value("${secure.data.collector.url:iot-xxx10}") String secureDataCollectorUrl
     ) {
         this.restClient = restClient;
         this.mapper = mapper;
-        this.scheduler = scheduler;
+//        this.scheduler = scheduler;
         this.serverIdentifier = serverIdentifier;
         this.secureDataCollectorUrl = secureDataCollectorUrl;
         //handleNewToken();
@@ -90,14 +90,14 @@ public class AuthenticationService {
 
     @PostConstruct
     public void start() {
-        nextSchedule(0);
+//        nextSchedule(0);
     }
 
     private void nextSchedule(long delayMillis) {
-        ScheduledFuture<?> future = scheduler.schedule(
-                this::handleNewToken,
-                Instant.now().plusMillis(delayMillis)
-        );
-        futureRef.set(future);
+//        ScheduledFuture<?> future = scheduler.schedule(
+//                this::handleNewToken,
+//                Instant.now().plusMillis(delayMillis)
+//        );
+//        futureRef.set(future);
     }
 }
