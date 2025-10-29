@@ -2,6 +2,8 @@ package lsdi.SmartMeterOne.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lsdi.SmartMeterOne.dtos.EventPayloadDTO;
 import lsdi.SmartMeterOne.dtos.ProofRequestDTO;
@@ -27,6 +29,7 @@ public class HolderService {
 
     public HolderService(RestClient restClient) {
         this.restClient = restClient;
+        this.sendProofRequest("6e599514-2044-4351-bfd5-6d83300f46f7");
     }
 
     public void handleEvent(String topic, String payload) {
@@ -60,7 +63,7 @@ public class HolderService {
 
     */
     public String generateProofRequestPayload(String connectionId) {
-        String PROOF_REQUEST_TEMPLATE = """
+        /*String PROOF_REQUEST_TEMPLATE = """
         {
             "connection_id": "{{connection_id}}",
             "presentation_request": {
@@ -88,7 +91,57 @@ public class HolderService {
 
         return PROOF_REQUEST_TEMPLATE
                 .replace("{{connection_id}}", connectionId)
-                .replace("{{issuer_did}}", ISSUER_DID);
+                .replace("{{issuer_did}}", ISSUER_DID);*/
+        String issuerDid = ISSUER_DID;
+
+
+        // Criação do JSON principal
+        ObjectNode root = mapper.createObjectNode();
+        root.put("connection_id", connectionId);
+
+        // presentation_request
+        ObjectNode presentationRequest = mapper.createObjectNode();
+        ObjectNode indy = mapper.createObjectNode();
+
+        indy.put("name", "Application Proof Request");
+        indy.put("version", "1.0");
+
+        // requested_attributes
+        ObjectNode requestedAttributes = mapper.createObjectNode();
+        ObjectNode attr = mapper.createObjectNode();
+
+        // names array
+        ArrayNode names = mapper.createArrayNode();
+        names.add("permission_list");
+        names.add("full_name");
+        attr.set("names", names);
+
+        // restrictions array
+        ArrayNode restrictions = mapper.createArrayNode();
+        ObjectNode restriction = mapper.createObjectNode();
+        restriction.put("issuer_did", issuerDid);
+        restrictions.add(restriction);
+        attr.set("restrictions", restrictions);
+
+        requestedAttributes.set("attr", attr);
+        indy.set("requested_attributes", requestedAttributes);
+
+        // requested_predicates vazio
+        indy.set("requested_predicates", mapper.createObjectNode());
+
+        presentationRequest.set("indy", indy);
+        root.set("presentation_request", presentationRequest);
+        String jsonString = "";
+        try {
+
+        // Converte para JSON string formatada
+            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+//            System.out.println(jsonString);
+            return jsonString;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return jsonString;
     }
 
     public void sendProofRequest(String connectionId) {
