@@ -29,7 +29,7 @@ public class HolderService {
 
     public HolderService(RestClient restClient) {
         this.restClient = restClient;
-        this.sendProofRequest("6e599514-2044-4351-bfd5-6d83300f46f7");
+//        this.sendProofRequest("6e599514-2044-4351-bfd5-6d83300f46f7");
     }
 
     public void handleEvent(String topic, String payload) {
