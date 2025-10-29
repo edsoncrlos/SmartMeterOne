@@ -62,7 +62,7 @@ public class HolderService {
     }
 
     */
-    public String generateProofRequestPayload(String connectionId) {
+    public ObjectNode generateProofRequestPayload(String connectionId) {
         /*String PROOF_REQUEST_TEMPLATE = """
         {
             "connection_id": "{{connection_id}}",
@@ -132,23 +132,17 @@ public class HolderService {
         presentationRequest.set("indy", indy);
         root.set("presentation_request", presentationRequest);
         String jsonString = "";
-        try {
 
         // Converte para JSON string formatada
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+            return root;
 //            System.out.println(jsonString);
-            return jsonString;
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return jsonString;
     }
 
     public void sendProofRequest(String connectionId) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
-        String requestPayload = generateProofRequestPayload(connectionId);
+        ObjectNode requestPayload = generateProofRequestPayload(connectionId);
         System.out.println("payload created");
-        System.out.println(requestPayload);
+        System.out.println(requestPayload.asText());
         System.out.println(url);
 
         String response = restClient.post()
