@@ -73,16 +73,16 @@ public class HolderService {
             System.out.println("payload created");
             System.out.println(url);
 
-            String response = restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(json)
-                    .retrieve()
-                    .body(String.class);
-
-            System.out.println("Response: " + response);
-            System.out.println("\n\n\nHttpClient");
-
+//            String response = restClient.post()
+//                    .uri(url)
+//                    .contentType(MediaType.APPLICATION_JSON)
+//                    .body(json)
+//                    .retrieve()
+//                    .body(String.class);
+//
+//            System.out.println("Response: " + response);
+//            System.out.println("\n\n\nHttpClient");
+//
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
