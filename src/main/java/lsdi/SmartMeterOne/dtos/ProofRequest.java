@@ -59,6 +59,7 @@ public class ProofRequest {
 
     @Data
     public class RequestedAttributes {
+        @JsonProperty("attr1_referent")
         private Attr attr;
     }
 

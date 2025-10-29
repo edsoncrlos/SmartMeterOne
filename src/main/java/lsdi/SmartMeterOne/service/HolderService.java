@@ -64,20 +64,21 @@ public class HolderService {
         try {
             String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
             System.out.println(json);
+            System.out.println("payload created");
+            System.out.println(url);
+
+            String response = restClient.post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .b
+                    .retrieve()
+                    .body(String.class);
+
+            System.out.println("Response: " + response);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("payload created");
-        System.out.println(url);
 
-        String response = restClient.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(proofRequest)
-                .retrieve()
-                .body(String.class);
-
-        System.out.println("Response: " + response);
     }
 
     /*/ --- Extrai campos e verifica prova
