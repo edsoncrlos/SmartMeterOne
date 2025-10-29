@@ -11,6 +11,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 @Service
 public class HolderService {
 
@@ -70,12 +76,32 @@ public class HolderService {
             String response = restClient.post()
                     .uri(url)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .b
+                    .body(json)
                     .retrieve()
                     .body(String.class);
 
             System.out.println("Response: " + response);
-        } catch (JsonProcessingException e) {
+            System.out.println("\n\n\nHttpClient");
+
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .build();
+
+            // Cria a requisição POST
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(10))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            // Envia e obtém resposta
+            HttpResponse<String> respons = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Imprime resultado
+            System.out.println("Status: " + respons.statusCode());
+            System.out.println("Response body: " + respons.body());
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
