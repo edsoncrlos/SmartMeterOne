@@ -73,34 +73,34 @@ public class HolderService {
             System.out.println("payload created");
             System.out.println(url);
 
-//            String response = restClient.post()
-//                    .uri(url)
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .body(json)
-//                    .retrieve()
-//                    .body(String.class);
+            String response = restClient.post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(json)
+                    .retrieve()
+                    .body(String.class);
+
+            System.out.println("Response: " + response);
+            System.out.println("\n\n\nHttpClient");
+
+//            HttpClient client = HttpClient.newBuilder()
+//                    .connectTimeout(Duration.ofSeconds(10))
+//                    .build();
 //
-//            System.out.println("Response: " + response);
-//            System.out.println("\n\n\nHttpClient");
+//            // Cria a requisição POST
+//            HttpRequest request = HttpRequest.newBuilder()
+//                    .uri(URI.create(url))
+//                    .timeout(Duration.ofSeconds(10))
+//                    .header("Content-Type", "application/json")
+//                    .POST(HttpRequest.BodyPublishers.ofString(json))
+//                    .build();
 //
-            HttpClient client = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofSeconds(10))
-                    .build();
-
-            // Cria a requisição POST
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .timeout(Duration.ofSeconds(10))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
-                    .build();
-
-            // Envia e obtém resposta
-            HttpResponse<String> respons = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            // Imprime resultado
-            System.out.println("Status: " + respons.statusCode());
-            System.out.println("Response body: " + respons.body());
+//            // Envia e obtém resposta
+//            HttpResponse<String> respons = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//            // Imprime resultado
+//            System.out.println("Status: " + respons.statusCode());
+//            System.out.println("Response body: " + respons.body());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

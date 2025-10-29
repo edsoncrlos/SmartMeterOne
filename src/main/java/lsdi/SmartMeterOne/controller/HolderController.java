@@ -21,6 +21,14 @@ public class HolderController {
         holderService.handleEvent(topic, payload);
     }
 
+    @GetMapping("/webhook/{id}")
+    public void test(@PathVariable String id) {
+        System.out.println(id);
+        holderService.sendProofRequest(id);
+    }
+
+
+
     /*@PostMapping("/webhook/topic/{topic}/")
     public ResponseEntity<Void> handleEvents(@PathVariable String topic, @RequestBody JsonNode payload) throws Exception {
         System.out.println("controller");
