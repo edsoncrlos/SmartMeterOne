@@ -25,12 +25,7 @@ public class HolderService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final RestTemplate restTemplate;
-
-
-    public HolderService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public void handleEvent(String topic, String payload) {
         try {
