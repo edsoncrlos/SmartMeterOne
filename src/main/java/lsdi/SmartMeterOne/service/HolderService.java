@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.hyperledger.acy_py.generated.model.V20PresRequestByFormat;
-
+import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 
@@ -72,14 +72,18 @@ public class HolderService {
             // Construtor de prova
             ProofRequestPresentationBuilder builder = new ProofRequestPresentationBuilder(ariesClient);
 
+            Set<String> attributes = Set.of("permission_list", "full_name");
+
+            ProofRestrictions proofRestrictions = PresentProofRequest.ProofRequest.ProofRestrictions
+                    .builder()
+                    .issuerDid(ISSUER_DID) // restrição: issuer_did
+                    .build();
+
             // Constrói o Proof Request para múltiplos atributos
             PresentProofRequest presentProofRequest = PresentProofRequestHelper.buildForEachAttribute(
                     connectionId,
-                    (Set<String>) List.of("permission_list", "full_name"),
-                    PresentProofRequest.ProofRequest.ProofRestrictions
-                            .builder()
-                            .issuerDid(ISSUER_DID) // restrição: issuer_did
-                            .build()
+                    attributes,
+                    proofRestrictions
             );
 
             // Personaliza nome e versão da prova (equivalente ao JSON)
