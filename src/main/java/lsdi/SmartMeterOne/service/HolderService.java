@@ -205,11 +205,17 @@ public class HolderService {
     public String curlTest(String presentation) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
 
-        return restClient.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(presentation)
-                .retrieve()
-                .body(String.class);
+        try {
+            Map<String, Object> payload = mapper.readValue(presentation, Map.class);
+
+            return restClient.post()
+                    .uri(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(payload)
+                    .retrieve()
+                    .body(String.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao enviar JSON", e);
+        }
     }
 }
