@@ -1,12 +1,10 @@
 package lsdi.SmartMeterOne.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lsdi.SmartMeterOne.dtos.ProofRequest;
-import org.hyperledger.acy_py.generated.model.PresentationRequest;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import lsdi.SmartMeterOne.dtos.ProofRequesta;
+import org.hyperledger.acy_py.generated.model.*;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
@@ -16,24 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.hyperledger.acy_py.generated.model.V20PresRequestByFormat;
+
 import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions;
-import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 
 
-
-import org.hyperledger.acy_py.generated.model.PresentationRequest;
-import org.hyperledger.acy_py.generated.model.V20PresRequestByFormat;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class HolderService {
@@ -137,9 +123,9 @@ public class HolderService {
 
     public void sendProofRequest(String connectionId) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
-        ProofRequest proofRequest = new ProofRequest(connectionId, ISSUER_DID);
+        ProofRequesta proofRequesta = new ProofRequesta(connectionId, ISSUER_DID);
         try {
-            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequesta);
             System.out.println(json);
             System.out.println("payload created");
             System.out.println(url);
@@ -215,4 +201,15 @@ public class HolderService {
         restTemplate.postForEntity(url, body, String.class);
         System.out.println("Enviar token," + (System.currentTimeMillis() - start));
     }*/
+
+    public String curlTest(String presentation) {
+        String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
+
+        return restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(presentation)
+                .retrieve()
+                .body(String.class);
+    }
 }

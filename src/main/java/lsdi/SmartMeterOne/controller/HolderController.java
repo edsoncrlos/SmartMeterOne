@@ -27,6 +27,12 @@ public class HolderController {
         holderService.sendProofRequest(id);
     }
 
+    @PostMapping("/webhook")
+    public void curlTest(@RequestBody String presentation) {
+        System.out.println(presentation);
+        holderService.curlTest(presentation);
+    }
+
 
 
     /*@PostMapping("/webhook/topic/{topic}/")

@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class ProofRequest {
+public class ProofRequesta {
     @JsonProperty("connection_id")
     private String connectionId;
 
     @JsonProperty("presentation_request")
     private PresentationRequest presentationRequest;
 
-    public ProofRequest(String connectionId, String issuerDid) {
+    public ProofRequesta(String connectionId, String issuerDid) {
         Restriction restriction = new Restriction();
         restriction.issuerDid = issuerDid;
 
