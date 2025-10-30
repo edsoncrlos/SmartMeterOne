@@ -2,6 +2,7 @@ package lsdi.SmartMeterOne.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lsdi.SmartMeterOne.common.ApiPaths;
 import lsdi.SmartMeterOne.dtos.ProofRequest;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,13 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
 import org.springframework.web.client.RestTemplate;
 
-
 import java.net.URI;
-import java.util.*;
 
 @Service
 public class HolderService {
@@ -27,11 +25,11 @@ public class HolderService {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final RestClient restClient;
+    private final RestTemplate restTemplate;
 
-    public HolderService(RestClient restClient) {
-        this.restClient = restClient;
-//        this.sendProofRequest("6e599514-2044-4351-bfd5-6d83300f46f7");
+
+    public HolderService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     public void handleEvent(String topic, String payload) {
@@ -49,9 +47,7 @@ public class HolderService {
 
     public void handleConnections(JsonNode payload) {
         if (payload.get("state").asText().equals("active")) {
-//            long start = System.currentTimeMillis();
             sendProofRequest(payload.get("connection_id").asText());
-//            System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
         }
     }
 
@@ -66,62 +62,23 @@ public class HolderService {
     */
 
     public void sendProofRequest(String connectionId) {
-        String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
+        String url = ARIES_AGENT_ENDPOINT + ApiPaths.PRESENTATION_PROOF;
         ProofRequest proofRequest = new ProofRequest(connectionId, ISSUER_DID);
-        RestTemplate restTemplate = new RestTemplate();
 
         try {
             String presentationJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
-            /*String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
-            System.out.println(json);
-            System.out.println("payload created");
-            System.out.println(url);
 
-            String response = restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(json)
-                    .retrieve()
-                    .body(String.class);
-
-            System.out.println("Response: " + response);
-            System.out.println("\n\n\nHttpClient");*/
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // Cria o RequestEntity com o JSON como corpo
             RequestEntity<String> request = RequestEntity
                     .post(URI.create(url))
                     .headers(headers)
                     .body(presentationJson);
 
-            ResponseEntity<String> response =
-                    restTemplate.exchange(request, String.class);
-
-            System.out.println("Body"+ response.getBody());
-            System.out.println("response: " + response.getStatusCode());
-            // Retorna o corpo da resposta (ou status)
-//            return response.getBody();
-
-//            HttpClient client = HttpClient.newBuilder()
-//                    .connectTimeout(Duration.ofSeconds(10))
-//                    .build();
-//
-//            // Cria a requisição POST
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create(url))
-//                    .timeout(Duration.ofSeconds(10))
-//                    .header("Content-Type", "application/json")
-//                    .POST(HttpRequest.BodyPublishers.ofString(json))
-//                    .build();
-//
-//            // Envia e obtém resposta
-//            HttpResponse<String> respons = client.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//            // Imprime resultado
-//            System.out.println("Status: " + respons.statusCode());
-//            System.out.println("Response body: " + respons.body());
+            restTemplate.exchange(request, String.class);
         } catch (Exception e) {
+            System.out.println(e);
             throw new RuntimeException(e);
         }
 
