@@ -51,11 +51,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>network.idu.acapy</groupId>
-			<artifactId>aries-client-python</artifactId>
-			<version>0.10.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>

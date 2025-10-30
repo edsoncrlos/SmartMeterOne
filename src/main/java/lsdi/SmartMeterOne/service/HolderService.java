@@ -2,14 +2,8 @@ package lsdi.SmartMeterOne.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import lsdi.SmartMeterOne.dtos.ProofRequesta;
-import org.hyperledger.acy_py.generated.model.*;
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.present_proof.ProofRequestPresentationBuilder;
+import lsdi.SmartMeterOne.dtos.ProofRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions;
-import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -54,64 +46,11 @@ public class HolderService {
             System.out.println(e);
         }
     }
-    public void ariesClientTest(String connectionId) {
-        AriesClient ariesClient = AriesClient.builder()
-                .url("http://verifieragent:8041")
-                .build();
-
-        try {
-            // Construtor de prova
-            ProofRequestPresentationBuilder builder = new ProofRequestPresentationBuilder(ariesClient);
-
-            Set<String> attributes = Set.of("permission_list", "full_name");
-
-            ProofRestrictions proofRestrictions = PresentProofRequest.ProofRequest.ProofRestrictions
-                    .builder()
-                    .issuerDid(ISSUER_DID) // restrição: issuer_did
-                    .build();
-
-            // Constrói o Proof Request para múltiplos atributos
-            PresentProofRequest presentProofRequest = PresentProofRequestHelper.buildForEachAttribute(
-                    connectionId,
-                    attributes,
-                    proofRestrictions
-            );
-
-            // Personaliza nome e versão da prova (equivalente ao JSON)
-            presentProofRequest.getProofRequest().setName("Application Proof Request");
-            presentProofRequest.getProofRequest().setVersion("1.0");
-
-            // Gera o Base64 (ou JSON) do request
-            Optional<ProofRequestPresentationBuilder.BuiltPresentationRequest> base64 = builder.buildRequest(presentProofRequest);
-
-            if (base64.isPresent()) {
-                System.out.println("✅ Proof request gerado (Base64):");
-                System.out.println(base64.get());
-            } else {
-                System.out.println("⚠️ Falha ao gerar proof request.");
-            }
-
-            // Envia o proof request para o agente ACA-Py
-            /*Optional<PresentationExchangeRecord> response = ariesClient.presentProofSendRequest(presentProofRequest);
-
-            if (response.isPresent()) {
-                System.out.println("✅ Proof request enviado com sucesso:");
-                System.out.println(response.get());
-            } else {
-                System.out.println("⚠️ Nenhuma resposta do agente ao enviar a prova.");
-            }*/
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("❌ Erro ao enviar proof request: " + e.getMessage());
-        }
-
-    }
 
     public void handleConnections(JsonNode payload) {
         if (payload.get("state").asText().equals("active")) {
 //            long start = System.currentTimeMillis();
-            ariesClientTest(payload.get("connection_id").asText());
-//            sendProofRequest(payload.get("connection_id").asText());
+            sendProofRequest(payload.get("connection_id").asText());
 //            System.out.println("Requisitar prova," + (System.currentTimeMillis() - start));
         }
     }
@@ -128,9 +67,12 @@ public class HolderService {
 
     public void sendProofRequest(String connectionId) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
-        ProofRequesta proofRequesta = new ProofRequesta(connectionId, ISSUER_DID);
+        ProofRequest proofRequest = new ProofRequest(connectionId, ISSUER_DID);
+        RestTemplate restTemplate = new RestTemplate();
+
         try {
-            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequesta);
+            String presentationJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
+            /*String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);
             System.out.println(json);
             System.out.println("payload created");
             System.out.println(url);
@@ -143,7 +85,23 @@ public class HolderService {
                     .body(String.class);
 
             System.out.println("Response: " + response);
-            System.out.println("\n\n\nHttpClient");
+            System.out.println("\n\n\nHttpClient");*/
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // Cria o RequestEntity com o JSON como corpo
+            RequestEntity<String> request = RequestEntity
+                    .post(URI.create(url))
+                    .headers(headers)
+                    .body(presentationJson);
+
+            ResponseEntity<String> response =
+                    restTemplate.exchange(request, String.class);
+
+            System.out.println("Body"+ response.getBody());
+            System.out.println("response: " + response.getStatusCode());
+            // Retorna o corpo da resposta (ou status)
+//            return response.getBody();
 
 //            HttpClient client = HttpClient.newBuilder()
 //                    .connectTimeout(Duration.ofSeconds(10))
