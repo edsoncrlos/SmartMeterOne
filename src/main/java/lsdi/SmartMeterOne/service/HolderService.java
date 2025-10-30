@@ -11,14 +11,19 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.ProofRequestPresentationBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import org.hyperledger.aries.api.present_proof.PresentProofRequest.ProofRequest.ProofRestrictions;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
+import org.springframework.web.client.RestTemplate;
 
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -87,14 +92,14 @@ public class HolderService {
             }
 
             // Envia o proof request para o agente ACA-Py
-            Optional<PresentationExchangeRecord> response = ariesClient.presentProofSendRequest(presentProofRequest);
+            /*Optional<PresentationExchangeRecord> response = ariesClient.presentProofSendRequest(presentProofRequest);
 
             if (response.isPresent()) {
                 System.out.println("✅ Proof request enviado com sucesso:");
                 System.out.println(response.get());
             } else {
                 System.out.println("⚠️ Nenhuma resposta do agente ao enviar a prova.");
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("❌ Erro ao enviar proof request: " + e.getMessage());
@@ -204,16 +209,23 @@ public class HolderService {
 
     public String curlTest(String presentation) {
         String url = "http://verifieragent:8041" + "/present-proof-2.0/send-request";
+        RestTemplate restTemplate = new RestTemplate();
 
         try {
-            Map<String, Object> payload = mapper.readValue(presentation, Map.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-            return restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(payload)
-                    .retrieve()
-                    .body(String.class);
+            // Cria o RequestEntity com o JSON como corpo
+            RequestEntity<String> request = RequestEntity
+                    .post(URI.create(url))
+                    .headers(headers)
+                    .body(presentation);
+
+            ResponseEntity<String> response =
+                    restTemplate.exchange(request, String.class);
+
+            // Retorna o corpo da resposta (ou status)
+            return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("Erro ao enviar JSON", e);
         }
