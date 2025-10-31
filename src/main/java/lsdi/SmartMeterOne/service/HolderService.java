@@ -23,7 +23,7 @@ import java.util.List;
 public class HolderService {
 
     @Value("${aries.agent.endpoint}")
-    private static String ARIES_AGENT_ENDPOINT;
+    private String ARIES_AGENT_ENDPOINT;
     private static final String ISSUER_DID = "CGv9d8HE2Fkek2f1py2j7g";
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -78,7 +78,7 @@ public class HolderService {
         }
     }
 
-    private AccessFields getAccessFields(String pres_ex_id) {
+    public AccessFields getAccessFields(String pres_ex_id) {
         String url = ARIES_AGENT_ENDPOINT + ApiPaths.PRESENTATION_PROOF_RECORDS_VERIFIER.replace("{pres_ex_id}", pres_ex_id);
 
         try {
