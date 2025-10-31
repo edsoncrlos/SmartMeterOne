@@ -36,7 +36,7 @@ public class JwtService {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return "Bearer " + compactTokenString;
+        return compactTokenString;
     }
 
     public UserPrincipalDTO parseToken(String token) {

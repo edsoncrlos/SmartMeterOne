@@ -112,20 +112,28 @@ public class HolderService {
         }
     }
 
-    private void sendAccessToken(String connectionId, AccessFields fields) {
+    public void sendAccessToken(String connectionId, AccessFields fields) {
         String url = ARIES_AGENT_ENDPOINT + ApiPaths.CONNECTION_SEND_MESSAGE.replace("{connection_id}", connectionId);
 
         try {
             String token = jwtService.generateToken(fields);
 
-            Map<String, Object> content = new HashMap<>();
-            Map<String, Object> wrapper = new HashMap<>();
+//            Map<String, Object> content = new HashMap<>();
+//            Map<String, Object> wrapper = new HashMap<>();
+//
+//            content.put("access_token", token);
+//            wrapper.put("content", content);
+//
+//            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapper);
 
-            content.put("access_token", token);
-            wrapper.put("content", content);
+            String tokenTemplate = "{\"access_token\": \"{{JWT}}\"}".replace("{{JWT}}", token);
 
-            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapper);
+            Map<String, String> wrapContent = new HashMap<>(1);
+            wrapContent.put("content", tokenTemplate);
 
+            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapContent);
+
+            System.out.println(tokenJson);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 

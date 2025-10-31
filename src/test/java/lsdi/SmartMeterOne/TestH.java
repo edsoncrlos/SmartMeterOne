@@ -4,11 +4,17 @@ import lsdi.SmartMeterOne.service.HolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
+import static lsdi.SmartMeterOne.common.JwtConstants.USER;
 
 @SpringBootTest
 public class TestH {
     @Autowired
     HolderService holderService;
+
+    @Test
+    public void sendAccess() {
+        holderService.sendAccessToken("f68a78d6-79c3-44a1-ba78-6960cca088d7", USER);
+    }
 
     @Test
     public void handle() {
