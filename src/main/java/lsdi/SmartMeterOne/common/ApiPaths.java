@@ -1,7 +1,7 @@
 package lsdi.SmartMeterOne.common;
 
 public class ApiPaths {
-    public static final String AUTHENTICATE = "/authenticate";
+    public static final String WEBHOOK = "/webhook/topic/{topic}/";
 
     public static final String CONSUMPTION_BY_HOUR = "/{uuid}";
 

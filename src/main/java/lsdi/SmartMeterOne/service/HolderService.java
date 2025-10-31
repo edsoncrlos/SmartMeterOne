@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HolderService {
@@ -27,15 +29,23 @@ public class HolderService {
     private static final String ISSUER_DID = "CGv9d8HE2Fkek2f1py2j7g";
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private final JwtService jwtService;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    public HolderService(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     public void handleEvent(String topic, String payload) {
         try {
             JsonNode payloadJson = mapper.readTree(payload);
+            String state = payloadJson.get("state").asText();
+            String connectionId = payloadJson.get("connection_id").asText();
+
             switch (topic) {
-                case "connections" -> handleConnections(payloadJson);
-                case "present_proof_v2_0" -> handleProofPresentation(payloadJson);
+                case "connections" -> handleConnections(connectionId, state, payloadJson);
+                case "present_proof_v2_0" -> handleProofPresentation(connectionId, state, payloadJson);
                 default -> System.out.println("Unknown topic: " + topic);
             }
         } catch (Exception e) {
@@ -43,16 +53,18 @@ public class HolderService {
         }
     }
 
-    private void handleConnections(JsonNode payload) {
-        if (payload.get("state").asText().equals("active")) {
-            sendProofRequest(payload.get("connection_id").asText());
+    private void handleConnections(String connectionId, String state, JsonNode payload) {
+        if (state.equals("active")) {
+            sendProofRequest(connectionId);
         }
     }
 
-    public void handleProofPresentation(JsonNode payload) throws Exception {
-        if (payload.get("state").asText().equals("presentation-received")) {
-            AccessFields fields = getAccessFields(payload.get("pres_ex_id").asText());
-            sendAccessToken(payload.get("connection_id").asText(), fields);
+    public void handleProofPresentation(String connectionId, String state, JsonNode payload) throws Exception {
+        if (state.equals("presentation-received")) {
+            String presExId = payload.get("pres_ex_id").asText();
+            AccessFields fields = getAccessFields(presExId);
+
+            sendAccessToken(connectionId, fields);
         }
     }
 
@@ -93,7 +105,7 @@ public class HolderService {
             List<String> permissions = mapper.readValue(attrs.path("permission_list").path("raw").asText(), List.class);
             String fullName = attrs.path("full_name").path("raw").asText();
 
-            return new AccessFields(permissions, fullName);
+            return new AccessFields(fullName, permissions);
         } catch (Exception e) {
             System.out.println(e);
             throw new RuntimeException(e);
@@ -101,13 +113,29 @@ public class HolderService {
     }
 
     private void sendAccessToken(String connectionId, AccessFields fields) {
-        System.out.println("Access Tokennnnnnn");
+        String url = ARIES_AGENT_ENDPOINT + ApiPaths.CONNECTION_SEND_MESSAGE.replace("{connection_id}", connectionId);
 
         try {
-            // Converte o objeto em JSON string
-            String jsonString = mapper.writeValueAsString(fields);
-            System.out.println(jsonString);
-        } catch (JsonProcessingException e) {
+            String token = jwtService.generateToken(fields);
+
+            Map<String, Object> content = new HashMap<>();
+            Map<String, Object> wrapper = new HashMap<>();
+
+            content.put("access_token", token);
+            wrapper.put("content", content);
+
+            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(token);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            RequestEntity<String> request = RequestEntity
+                    .post(URI.create(url))
+                    .headers(headers)
+                    .body(tokenJson);
+
+            restTemplate.exchange(request, String.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -122,9 +150,10 @@ public class HolderService {
             List<String> permissions = mapper.readValue(attrs.path("permission_list").path("raw").asText(), List.class);
             String fullName = attrs.path("full_name").path("raw").asText();
 
-            AccessFields accessFields = new AccessFields(permissions, fullName);
+            AccessFields accessFields = new AccessFields(fullName, permissions);
 
-            System.out.println(accessFields);
+            System.out.println(accessFields.getFullName());
+            System.out.println(accessFields.getPermissionList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
