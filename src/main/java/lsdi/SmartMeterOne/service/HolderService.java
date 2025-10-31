@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -91,7 +92,11 @@ public class HolderService {
     }
 
     public AccessFields getAccessFields(String pres_ex_id) {
-        String url = ARIES_AGENT_ENDPOINT + ApiPaths.PRESENTATION_PROOF_RECORDS_VERIFIER.replace("{pres_ex_id}", pres_ex_id);
+        String url = UriComponentsBuilder
+                .fromHttpUrl(ARIES_AGENT_ENDPOINT)
+                .path(ApiPaths.PRESENTATION_PROOF_RECORDS_VERIFIER)
+                .buildAndExpand(pres_ex_id)
+                .toUriString();
 
         try {
             System.out.println("try get fields");
@@ -113,23 +118,22 @@ public class HolderService {
     }
 
     public void sendAccessToken(String connectionId, AccessFields fields) {
-        String url = ARIES_AGENT_ENDPOINT + ApiPaths.CONNECTION_SEND_MESSAGE.replace("{connection_id}", connectionId);
+        String url = UriComponentsBuilder
+                .fromHttpUrl(ARIES_AGENT_ENDPOINT)
+                .path(ApiPaths.CONNECTION_SEND_MESSAGE)
+                .buildAndExpand(connectionId)
+                .toUriString();
 
         try {
             String token = jwtService.generateToken(fields);
 
-//            Map<String, Object> content = new HashMap<>();
-//            Map<String, Object> wrapper = new HashMap<>();
-//
-//            content.put("access_token", token);
-//            wrapper.put("content", content);
-//
-//            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapper);
+            Map<String, String> wrapAccessToken = new HashMap<>();
+            wrapAccessToken.put("access_token", token);
 
-            String tokenTemplate = "{\"access_token\": \"{{JWT}}\"}".replace("{{JWT}}", token);
+            String innerJson = mapper.writeValueAsString(wrapAccessToken);
 
-            Map<String, String> wrapContent = new HashMap<>(1);
-            wrapContent.put("content", tokenTemplate);
+            Map<String, String> wrapContent = new HashMap<>();
+            wrapContent.put("content", innerJson);
 
             String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapContent);
 
@@ -146,7 +150,6 @@ public class HolderService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void json(String json) {
