@@ -1,9 +1,7 @@
 package lsdi.SmartMeterOne.controller;
 
-
 import lsdi.SmartMeterOne.service.HolderService;
 import org.springframework.web.bind.annotation.*;
-
 
 @RestController
 public class HolderController {
@@ -19,12 +17,6 @@ public class HolderController {
         System.out.println("topic: " +topic);
         System.out.println("payload: "+payload);
         holderService.handleEvent(topic, payload);
-    }
-
-    @GetMapping("/webhook/{id}")
-    public void test(@PathVariable String id) {
-        System.out.println(id);
-        holderService.sendProofRequest(id);
     }
 
     @PostMapping("/webhook")
