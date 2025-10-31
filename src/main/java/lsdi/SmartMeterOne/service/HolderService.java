@@ -124,7 +124,7 @@ public class HolderService {
             content.put("access_token", token);
             wrapper.put("content", content);
 
-            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(token);
+            String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapper);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
