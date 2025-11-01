@@ -1,4 +1,4 @@
-package lsdi.SmartMeterOne.service;
+package lsdi.SmartMeterOne.services;
 
 public class RestClientService implements DataCollector {
     @Override

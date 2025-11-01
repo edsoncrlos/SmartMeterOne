@@ -1,4 +1,4 @@
-package lsdi.SmartMeterOne.controller;
+package lsdi.SmartMeterOne.controllers;
 
 import lsdi.SmartMeterOne.common.ApiPaths;
 import org.springframework.web.bind.annotation.GetMapping;

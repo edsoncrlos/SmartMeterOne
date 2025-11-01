@@ -1,4 +1,4 @@
-package lsdi.SmartMeterOne.config;
+package lsdi.SmartMeterOne.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -1,11 +1,11 @@
-package lsdi.SmartMeterOne.service;
+package lsdi.SmartMeterOne.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lsdi.SmartMeterOne.config.JwtProperties;
+import lsdi.SmartMeterOne.configs.JwtProperties;
 import lsdi.SmartMeterOne.dtos.UserDTO;
 import lsdi.SmartMeterOne.dtos.UserPrincipalDTO;
 import org.springframework.stereotype.Service;

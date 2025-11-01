@@ -1,9 +1,7 @@
 package lsdi.SmartMeterOne.services;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import lsdi.SmartMeterOne.config.JwtProperties;
+import lsdi.SmartMeterOne.configs.JwtProperties;
 import lsdi.SmartMeterOne.dtos.UserPrincipalDTO;
-import lsdi.SmartMeterOne.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

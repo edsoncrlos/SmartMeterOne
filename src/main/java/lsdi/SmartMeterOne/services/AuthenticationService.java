@@ -1,4 +1,4 @@
-package lsdi.SmartMeterOne.service;
+package lsdi.SmartMeterOne.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,13 +10,11 @@ import lsdi.SmartMeterOne.utils.Signature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
 

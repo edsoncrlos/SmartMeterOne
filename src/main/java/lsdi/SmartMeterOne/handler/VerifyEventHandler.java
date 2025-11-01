@@ -6,7 +6,7 @@ import lsdi.SmartMeterOne.common.ApiPaths;
 import lsdi.SmartMeterOne.dtos.UserDTO;
 import lsdi.SmartMeterOne.dtos.ProofRequest;
 
-import lsdi.SmartMeterOne.service.JwtService;
+import lsdi.SmartMeterOne.services.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
