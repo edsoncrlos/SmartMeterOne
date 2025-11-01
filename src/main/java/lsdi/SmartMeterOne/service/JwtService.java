@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lsdi.SmartMeterOne.config.JwtProperties;
-import lsdi.SmartMeterOne.dtos.AccessFields;
+import lsdi.SmartMeterOne.dtos.UserDTO;
 import lsdi.SmartMeterOne.dtos.UserPrincipalDTO;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +24,14 @@ public class JwtService {
         this.jwtProperties = jwtProperties;
     }
 
-    public String generateToken(AccessFields userAccessFields) {
+    public String generateToken(UserDTO userUserDTO) {
         Instant expirationTime = Instant.now().plus(1, ChronoUnit.DAYS);
         Date expirationDate = Date.from(expirationTime);
 
         Key key = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes());
         String compactTokenString = Jwts.builder()
-                .claim("sub", userAccessFields.getFullName())
-                .claim("sig", userAccessFields.getPermissionList())
+                .claim("sub", userUserDTO.getFullName())
+                .claim("sig", userUserDTO.getPermissionList())
                 .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();

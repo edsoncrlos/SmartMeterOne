@@ -6,8 +6,8 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class AccessFields {
-    public AccessFields(String fullName, List<String> permissionList) {
+public class UserDTO {
+    public UserDTO(String fullName, List<String> permissionList) {
         this.fullName = fullName;
         this.permissionList = permissionList;
     }
