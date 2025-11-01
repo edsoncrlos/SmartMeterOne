@@ -11,6 +11,6 @@ public class SmartMeterOneController {
 
     @GetMapping(ApiPaths.CONSUMPTION_BY_HOUR)
     public String getConsumptionByHour() {
-        return "dindin";
+        return "thun thun saruuh";
     }
 }

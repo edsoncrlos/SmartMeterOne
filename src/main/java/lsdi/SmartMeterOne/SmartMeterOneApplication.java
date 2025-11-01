@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties(JwtProperties.class)
 //@EnableScheduling
+
 public class SmartMeterOneApplication {
 
 	public static void main(String[] args) {
