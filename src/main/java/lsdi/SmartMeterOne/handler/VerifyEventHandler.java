@@ -66,7 +66,7 @@ public class VerifyEventHandler {
             String presExId = payload.get("pres_ex_id").asText();
             UserDTO fields = getUser(presExId);
 
-            sendToken(connectionId, fields);
+            sendAccessToken(connectionId, fields);
         }
     }
 
@@ -116,7 +116,7 @@ public class VerifyEventHandler {
         }
     }
 
-    private void sendToken(String connectionId, UserDTO fields) {
+    private void sendAccessToken(String connectionId, UserDTO fields) {
         String url = UriComponentsBuilder
                 .fromHttpUrl(ARIES_AGENT_ENDPOINT)
                 .path(ApiPaths.CONNECTION_SEND_MESSAGE)
@@ -127,7 +127,7 @@ public class VerifyEventHandler {
             String token = jwtService.generateToken(fields);
 
             Map<String, String> wrapAccessToken = new HashMap<>();
-            wrapAccessToken.put("token", token);
+            wrapAccessToken.put("access_token", token);
 
             String innerJson = mapper.writeValueAsString(wrapAccessToken);
 
