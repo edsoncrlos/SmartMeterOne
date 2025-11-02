@@ -12,7 +12,7 @@ public class RestClientConfig {
     private final String interSCityUrl;
 
     public RestClientConfig(@Value("${interscity.url}") String interSCityUrl) {
-        this.interSCityUrl = interSCityUrl + ApiPaths.GET_HISTORY_DATA_ONE_RESOURCE;
+        this.interSCityUrl = interSCityUrl;
     }
 
     @Bean

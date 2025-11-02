@@ -29,6 +29,8 @@ public class VerifyEventHandler {
     private String ARIES_AGENT_ENDPOINT;
     @Value("${issuer.did}")
     private String ISSUER_DID;
+    @Value("${microservice.name}")
+    private String MICROSERVICE_NAME;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final JwtService jwtService;
@@ -61,12 +63,14 @@ public class VerifyEventHandler {
         }
     }
 
-    public void handleProofPresentation(String connectionId, String state, JsonNode payload) throws Exception {
+    public void handleProofPresentation(String connectionId, String state, JsonNode payload) {
         if (state.equals("presentation-received")) {
             String presExId = payload.get("pres_ex_id").asText();
-            UserDTO fields = getUser(presExId);
+            UserDTO user = getUser(presExId);
 
-            sendAccessToken(connectionId, fields);
+            if (user.getPermissionList().contains(MICROSERVICE_NAME)) {
+                sendAccessToken(connectionId, user);
+            }
         }
     }
 
@@ -116,7 +120,7 @@ public class VerifyEventHandler {
         }
     }
 
-    private void sendAccessToken(String connectionId, UserDTO fields) {
+    private void sendAccessToken(String connectionId, UserDTO user) {
         String url = UriComponentsBuilder
                 .fromHttpUrl(ARIES_AGENT_ENDPOINT)
                 .path(ApiPaths.CONNECTION_SEND_MESSAGE)
@@ -124,7 +128,7 @@ public class VerifyEventHandler {
                 .toUriString();
 
         try {
-            String token = jwtService.generateToken(fields);
+            String token = jwtService.generateToken(user);
 
             Map<String, String> wrapAccessToken = new HashMap<>();
             wrapAccessToken.put("access_token", token);
@@ -136,7 +140,6 @@ public class VerifyEventHandler {
 
             String tokenJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(wrapContent);
 
-            System.out.println(tokenJson);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
