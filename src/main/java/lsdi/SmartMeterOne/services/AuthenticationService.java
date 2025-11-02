@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lsdi.SmartMeterOne.exceptions.BearerTokenAuthException;
 import lsdi.SmartMeterOne.utils.Signature;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,7 @@ public class AuthenticationService {
 //    private final TaskScheduler scheduler;
     private final AtomicReference<ScheduledFuture<?>> futureRef = new AtomicReference<>();
 
-    //    @Getter
+    @Getter
     private String token;
 
     public AuthenticationService (
