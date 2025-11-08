@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import lsdi.SmartMeterOne.common.ApiPaths;
 import lsdi.SmartMeterOne.exceptions.BearerTokenAuthException;
 import lsdi.SmartMeterOne.utils.Signature;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,7 +61,7 @@ public class AuthenticationService {
         String authenticateRequest = mapper.writeValueAsString(root);
 
         String response = restClient.post()
-                .uri(secureDataCollectorUrl+"/authenticate")
+                .uri(secureDataCollectorUrl+ ApiPaths.AUTHENTICATE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(authenticateRequest)
                 .retrieve()
