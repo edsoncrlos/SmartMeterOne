@@ -1,4 +1,4 @@
-FROM FROM eclipse-temurin:17 AS build
+FROM maven:3.9.11-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17
+FROM eclipse-temurin:17-jdk-slim
 
 WORKDIR /app
 
