@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class ProofRequest {
+public class ProofRequestDTO {
     @JsonProperty("connection_id")
     private String connectionId;
 
     @JsonProperty("presentation_request")
     private PresentationRequest presentationRequest;
 
-    public ProofRequest(String connectionId, String issuerDid) {
+    public ProofRequestDTO(String connectionId, String issuerDid) {
         Restriction restriction = new Restriction();
         restriction.issuerDid = issuerDid;
 
@@ -25,7 +25,7 @@ public class ProofRequest {
         RequestedAttributes requestedAttributes = new RequestedAttributes();
         requestedAttributes.attr = attr;
 
-        // Indy (nome, versão, atributos e predicados)
+        // Indy
         Indy indy = new Indy();
         indy.name= "Application Proof Request";
         indy.version = "1.0";
@@ -54,7 +54,7 @@ public class ProofRequest {
         private RequestedAttributes requestedAttributes;
 
         @JsonProperty("requested_predicates")
-        private Map<String, Object> requestedPredicates; // vazio no seu caso
+        private Map<String, Object> requestedPredicates;
     }
 
     @Data

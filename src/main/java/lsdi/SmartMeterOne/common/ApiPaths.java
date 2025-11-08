@@ -2,7 +2,7 @@ package lsdi.SmartMeterOne.common;
 
 public class ApiPaths {
     public static final String WEBHOOK = "/webhook/topic/{topic}/";
-    public static final String CONSUMPTION_BY_HOUR = "/{uuid}";
+    public static final String CONSUMPTION_BY_HOUR = "/hour-consumption/{uuid}";
 
     // Interscity
     public static final String GET_HISTORY_DATA_ONE_RESOURCE = "/collector/resources/{uuid}/data";

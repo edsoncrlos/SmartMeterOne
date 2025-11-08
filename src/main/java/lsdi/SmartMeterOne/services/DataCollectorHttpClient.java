@@ -5,15 +5,18 @@ import lsdi.SmartMeterOne.common.ApiPaths;
 import lsdi.SmartMeterOne.utils.QueryBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
+@Service
 public class DataCollectorHttpClient implements DataCollector {
 
     private RestClient restClient;
 
     private AuthenticationService authenticationService;
 
-    private final String query;
+//    private final String query;
 
     DataCollectorHttpClient(
             RestClient interSCityRestClient,
@@ -21,14 +24,19 @@ public class DataCollectorHttpClient implements DataCollector {
             AuthenticationService authenticationService
     ) {
         this.restClient = interSCityRestClient;
-        this.query = new QueryBuilder(mapper).buildJson();
+//        this.query = new QueryBuilder(mapper).buildJson();
     }
 
     @Override
-    public String getHistoryDataOneResource(String uuid) {
+    public String getHistoryDataOneResource(String uuid, Integer index, String query) {
+
         return restClient.post()
-                .uri(ApiPaths.GET_HISTORY_DATA_ONE_RESOURCE, uuid)
-                .header(HttpHeaders.AUTHORIZATION, authenticationService.getToken())
+                .uri(uriBuilder -> uriBuilder
+                        .path(ApiPaths.GET_HISTORY_DATA_ONE_RESOURCE)
+                        .queryParam("start", index)
+                        .build(uuid)
+                )
+//                .header(HttpHeaders.AUTHORIZATION, authenticationService.getToken())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(query)
                 .retrieve()

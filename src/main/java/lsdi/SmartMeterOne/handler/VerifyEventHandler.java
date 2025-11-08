@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lsdi.SmartMeterOne.common.ApiPaths;
 import lsdi.SmartMeterOne.dtos.UserDTO;
-import lsdi.SmartMeterOne.dtos.ProofRequest;
+import lsdi.SmartMeterOne.dtos.ProofRequestDTO;
 
 import lsdi.SmartMeterOne.services.JwtService;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,7 +76,7 @@ public class VerifyEventHandler {
 
     private void sendProofRequest(String connectionId) {
         String url = ARIES_AGENT_ENDPOINT + ApiPaths.PRESENTATION_PROOF_SEND;
-        ProofRequest proofRequest = new ProofRequest(connectionId, ISSUER_DID);
+        ProofRequestDTO proofRequest = new ProofRequestDTO(connectionId, ISSUER_DID);
 
         try {
             String presentationJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(proofRequest);

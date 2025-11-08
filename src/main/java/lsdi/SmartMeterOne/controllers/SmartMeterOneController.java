@@ -1,17 +1,26 @@
 package lsdi.SmartMeterOne.controllers;
 
 import lsdi.SmartMeterOne.common.ApiPaths;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lsdi.SmartMeterOne.dtos.ConsumptionResponseDTO;
+import lsdi.SmartMeterOne.services.SmartMeterOneService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("meter")
+@RequestMapping
 public class SmartMeterOneController {
+    private final SmartMeterOneService smartMeterOneService;
+
+    public SmartMeterOneController(SmartMeterOneService smartMeterOneService) {
+        this.smartMeterOneService = smartMeterOneService;
+    }
 
     @GetMapping(ApiPaths.CONSUMPTION_BY_HOUR)
-    public String getConsumptionByHour() {
-
-        return "thun thun saruuh";
+    public ResponseEntity<ConsumptionResponseDTO> getConsumptionByHour(
+            @PathVariable("uuid") String uuid,
+            @RequestParam String day
+    ) {
+        ConsumptionResponseDTO consumption = this.smartMeterOneService.getConsumptionByHour(uuid, day);
+        return ResponseEntity.ok(consumption);
     }
 }
